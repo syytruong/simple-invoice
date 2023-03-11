@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { INPUT } from 'constant/style';
+import { INPUT } from 'constants/style';
 import { FieldValues, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES, API_URL } from 'constant';
+import { ROUTES, API_URL } from '../../constants';
 
 export default function Login(): JSX.Element {
   const {
@@ -23,19 +23,18 @@ export default function Login(): JSX.Element {
       setIsLoading(true);
       const { access_token, refresh_token } = await fetchAccessToken(email, password);
       const org_token = await fetchOrgToken(access_token);
-
+  
       localStorage.setItem('access_token', access_token);
-      localStorage.setItem('org_token', org_token);
       localStorage.setItem('refresh_token', refresh_token);
+      localStorage.setItem('org_token', org_token);
       navigate(ROUTES.INVOICE);
     } catch (error) {
-      setError("Email or password is not correct!");
-      throw new Error("Error login" + error);
+      setError('Email or password is not correct!');
+      throw new Error('Error login' + error);
     } finally {
       setIsLoading(false);
     }
   };
-
   const fetchAccessToken = async (username: string, password: string): Promise<{ access_token: string; refresh_token: string }> => {
     try {
       const response = await axios({
@@ -51,6 +50,7 @@ export default function Login(): JSX.Element {
         },
       });
   
+      console.log("WHAT IS THIS??", response.data);
       const { access_token, refresh_token } = response.data;
       return { access_token, refresh_token };
     } catch (error) {

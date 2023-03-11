@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
 import axios from 'axios';
-import { API_URL } from '../../constant';
+import { API_URL } from '../../constants';
 import { faker } from '@faker-js/faker';
 import { Invoice, InvoiceItem } from './interfaces'
 interface FormErrors {

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { ROUTES } from 'constant';
+import { ROUTES } from '../constants';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 const InvoicePage = lazy(() => import('pages/Invoice'));
 const LoginPage = lazy(() => import('pages/Login'));
