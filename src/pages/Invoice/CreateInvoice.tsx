@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
 import axios from 'axios';
-import { API_URL } from '../../constants';
+import { API } from '../../constants';
 import { faker } from '@faker-js/faker';
 import { Invoice, InvoiceItem } from './interfaces'
 interface FormErrors {
@@ -163,7 +163,7 @@ export default function CreateInvoice(): JSX.Element {
 
       try {
         await axios.post(
-          `${API_URL.baseURL}/invoice-service/2.0.0/invoices`,
+          `${API.url}/invoice-service/2.0.0/invoices`,
           { invoices: [invoice] },
           {
             headers: {

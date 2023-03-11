@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { INPUT } from 'constants/style';
 import { FieldValues, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES, API_URL } from '../../constants';
+import { ROUTES } from '../../constants';
+import { fetchAccessToken, fetchOrgToken } from '../../services/authService'
 
 export default function Login(): JSX.Element {
   const {
@@ -35,43 +35,6 @@ export default function Login(): JSX.Element {
       setIsLoading(false);
     }
   };
-  const fetchAccessToken = async (username: string, password: string): Promise<{ access_token: string; refresh_token: string }> => {
-    try {
-      const response = await axios({
-        url: `${API_URL.baseURL}/token`,
-        method: 'POST',
-        params: {
-          client_id: 'oO8BMTesSg9Vl3_jAyKpbOd2fIEa',
-          client_secret: '0Exp4dwqmpON_ezyhfm0o_Xkowka',
-          grant_type: 'password',
-          scope: 'openid',
-          username,
-          password,
-        },
-      });
-  
-      const { access_token, refresh_token } = response.data;
-      return { access_token, refresh_token };
-    } catch (error) {
-      throw new Error("Error fetching access token: " + error);
-    }
-  };
-
-  const fetchOrgToken = async (access_token: string): Promise<string> => {
-    try {
-      const response = await axios({
-        url: `${API_URL.baseURL}/membership-service/1.2.0/users/me`,
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + access_token},
-      });
-
-      const { data } = response.data;
-    
-      return data.memberships[0].token;
-    } catch (error) {
-      throw new Error("Error fetching org token: " + error);
-    }
-  }
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 min-h-screen">

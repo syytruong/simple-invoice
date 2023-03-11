@@ -2,7 +2,7 @@ import { INPUT } from 'constants/style';
 import { useState, useEffect, useCallback } from 'react';
 import CreateInvoice from './CreateInvoice';
 import axios from 'axios';
-import { API_URL } from '../../constants';
+import { API } from '../../constants';
 import { Invoice } from './interfaces'
 interface QueryParams {
   fromDate?: string;
@@ -77,7 +77,7 @@ export default function InvoicePage(): JSX.Element {
       }
   
       const response = await axios({
-        url: `${API_URL.baseURL}/invoice-service/1.0.0/invoices`,
+        url: `${API.url}/invoice-service/1.0.0/invoices`,
         method: 'GET',
         headers: {
           Authorization: `Bearer ${access_token}`,

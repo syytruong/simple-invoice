@@ -4,6 +4,8 @@ export const ROUTES = {
     INVOICE: '/invoice',
 };  
 
-export const API_URL = {
-    baseURL: 'https://sandbox.101digital.io',
+export const API = {
+    url: 'https://sandbox.101digital.io',
+    grant_type: 'password',
+    scope: 'openid',
 };
