@@ -53,3 +53,15 @@ export interface InvoiceItem {
     name: string;
   }[];
 }
+
+export interface FetchInvoicesQueryParams {
+  fromDate?: string;
+  toDate?: string;
+  pageSize: number;
+  pageNum: number;
+  ordering: string;
+  sortBy: string;
+  dateType: string;
+  status?: string;
+  keyword?: string;
+}

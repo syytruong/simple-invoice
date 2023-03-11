@@ -1,20 +1,8 @@
 import { INPUT } from 'constants/style';
 import { useState, useEffect, useCallback } from 'react';
 import CreateInvoice from './CreateInvoice';
-import axios from 'axios';
-import { API } from '../../constants';
-import { Invoice } from './interfaces'
-interface QueryParams {
-  fromDate?: string;
-  toDate?: string;
-  pageSize: number;
-  pageNum: number;
-  ordering: string;
-  sortBy: string;
-  dateType: string;
-  status?: string;
-  keyword?: string;
-}
+import { Invoice, FetchInvoicesQueryParams } from './interfaces';
+import { fetchInvoices } from '../../services/apiServices';
 
 export default function InvoicePage(): JSX.Element {
   const ORDER_TYPES = {
@@ -52,10 +40,10 @@ export default function InvoicePage(): JSX.Element {
     };
   }, [keyword]);
 
-  const fetchInvoices = useCallback(async () => {
+  const getInvoices = useCallback(async () => {
     try {
       setIsLoading(true);
-      let queryParams: QueryParams = {
+      let queryParams: FetchInvoicesQueryParams = {
         pageSize: limit,
         pageNum: page,
         ordering: order,
@@ -76,17 +64,9 @@ export default function InvoicePage(): JSX.Element {
         queryParams = {...queryParams, toDate: end};
       }
   
-      const response = await axios({
-        url: `${API.url}/invoice-service/1.0.0/invoices`,
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          'org-token': org_token,
-        },
-        params: queryParams,
-      });
-  
-      setInvoices(response.data.data);
+      const invoices = await fetchInvoices(access_token, org_token, queryParams);
+
+      setInvoices(invoices);
     } catch (error) {
       throw new Error('Error fetching invoices' + error);
     } finally {
@@ -96,9 +76,9 @@ export default function InvoicePage(): JSX.Element {
   
   useEffect(() => {
     if (access_token && org_token) {
-      fetchInvoices();
+      getInvoices();
     }
-  }, [access_token, org_token, fetchInvoices]);
+  }, [access_token, org_token, getInvoices]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = event.target.value;

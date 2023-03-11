@@ -3,7 +3,7 @@ import { INPUT } from 'constants/style';
 import { FieldValues, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants';
-import { fetchAccessToken, fetchOrgToken } from '../../services/authService'
+import { fetchAccessToken, fetchOrgToken } from '../../services/apiServices'
 
 export default function Login(): JSX.Element {
   const {

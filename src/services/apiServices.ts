@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API } from '../constants';
+import { Invoice, FetchInvoicesQueryParams } from '../pages/Invoice/interfaces';
 
 export const fetchAccessToken = async (
   username: string,
@@ -31,18 +32,43 @@ export const fetchOrgToken = async (access_token: string): Promise<string> => {
     const response = await axios({
       url: `${API.url}/membership-service/1.2.0/users/me`,
       method: 'GET',
-      headers: { 'Authorization': 'Bearer ' + access_token},
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
     });
-
-    const { data } = response.data;
-  
-    return data.memberships[0].token;
+    return response.data.data.memberships[0].token;
   } catch (error) {
-    throw new Error("Error fetching org token: " + error);
+    throw new Error('Error fetching org token: ' + error);
   }
 }
 
+export const fetchInvoices = async (
+  access_token: string | null,
+  org_token: string | null,
+  queryParams: FetchInvoicesQueryParams,
+): Promise<Invoice[]> => {
+  try {
+    if (!access_token || !org_token) {
+      throw new Error('Credentals are not provided');
+    }
+    const response = await axios({
+      url: `${API.url}/invoice-service/1.0.0/invoices`,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        'org-token': org_token,
+      },
+      params: queryParams,
+    });
+
+    return response.data.data;
+  } catch (error) {
+    throw new Error('Error fetching invoices: ' + error);
+  }
+};
+
 export default {
   fetchAccessToken,
-  fetchOrgToken
+  fetchOrgToken,
+  fetchInvoices,
 };
