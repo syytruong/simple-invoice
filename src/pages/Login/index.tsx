@@ -24,7 +24,7 @@ export default function Login(): JSX.Element {
       localStorage.setItem('refresh_token', refresh_token);
       navigate(ROUTES.INVOICE);
     } catch (error) {
-      console.error(error);
+      throw new Error("Error login" + error);
     }
   };
 
@@ -46,7 +46,7 @@ export default function Login(): JSX.Element {
       const { access_token, refresh_token } = response.data;
       return { access_token, refresh_token };
     } catch (error) {
-      throw new Error("Error fetching access token: " + error)
+      throw new Error("Error fetching access token: " + error);
     }
   };
 
@@ -58,7 +58,7 @@ export default function Login(): JSX.Element {
         headers: { 'Authorization': 'Bearer ' + access_token},
       });
 
-      const { data } = response.data
+      const { data } = response.data;
     
       return (data.memberships[0].token);
     } catch (error) {
