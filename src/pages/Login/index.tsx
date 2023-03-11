@@ -1,5 +1,9 @@
+import {useState} from 'react'
 import { INPUT } from 'constant/style';
 import { FieldValues, useForm } from 'react-hook-form';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from 'constant';
 
 export default function Login(): JSX.Element {
   const {
@@ -8,11 +12,36 @@ export default function Login(): JSX.Element {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: FieldValues): void => {
-    // TODO: handle login use
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: FieldValues): Promise<void> => {
     const { email, password } = data;
-    console.log(email);
-    console.log(password);
+  
+    try {
+      const { access_token, refresh_token } = await login(email, password);
+      navigate(ROUTES.INVOICE);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const login = async (username: string, password: string): Promise<{ access_token: string; refresh_token: string }> => {
+    const response = await axios({
+      url: 'https://sandbox.101digital.io/token',
+      method: 'POST',
+      params: {
+        client_id: 'oO8BMTesSg9Vl3_jAyKpbOd2fIEa',
+        client_secret: '0Exp4dwqmpON_ezyhfm0o_Xkowka',
+        grant_type: 'password',
+        scope: 'openid',
+        username,
+        password,
+      },
+    });
+
+    // Extract the org token from the user data
+    const { access_token, refresh_token } = response.data;
+    return { access_token, refresh_token };
   };
 
   return (
