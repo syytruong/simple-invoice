@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { API } from '../constants';
-require('dotenv').config();
 
 export const fetchAccessToken = async (
   username: string,
@@ -11,8 +10,8 @@ export const fetchAccessToken = async (
       url: `${API.url}/token`,
       method: 'POST',
       params: {
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
+        client_id: API.client_id,
+        client_secret: API.client_secret,
         grant_type: API.grant_type,
         scope: API.scope,
         username,
