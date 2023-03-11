@@ -115,10 +115,10 @@ export default function InvoicePage(): JSX.Element {
   };
 
   return (
-    <div className="container mx-auto py-10 min-h-screen">
+    <div className="container mx-auto py-10 min-h-screen max-w-screen-md">
       <div className="flex flex-col md:w-3/4 lg:w-1/2 xl:w-2/3 mx-auto">
-        <div className="mb-5 grid md:grid-cols-2 gap-4">
-          <div className="mt-0 sm:mt-0">
+        <div className="mb-5 grid md:grid-cols-2 gap-4 flex-wrap">
+          <div className="mt-0 sm:mt-0 w-full">
             <CreateInvoice />
           </div>
           <div>
