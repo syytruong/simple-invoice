@@ -1,26 +1,110 @@
 import { useState, Fragment } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../constant';
-interface InvoiceItem {
-  itemReference: string;
-  description: string;
-  quantity: number;
-  rate: number;
-}
-
-interface Invoice {
-  invoiceReference: string;
-  invoiceDate: string;
-  description: string;
-  amount: number;
-  items: InvoiceItem[];
-}
-
+import { faker } from '@faker-js/faker';
+import { Invoice, InvoiceItem } from './interfaces'
 interface FormErrors {
   invoiceReference?: string;
   invoiceDate?: string;
   description?: string;
   amount?: string;
+}
+
+const generateInvoice = (invoiceReference: string, invoiceDate: string, description: string,  items: InvoiceItem[]): Invoice => {
+  const invoice: Invoice = {
+    bankAccount: {
+      bankId: "123456",
+      sortCode: faker.finance.routingNumber(),
+      accountNumber: faker.finance.account(),
+      accountName: faker.name.findName(),
+    },
+    customer: {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      contact: {
+        email: faker.internet.email(),
+        mobileNumber: faker.phone.phoneNumber(),
+      },
+      addresses: [
+        {
+          premise: faker.address.secondaryAddress(),
+          countryCode: faker.address.countryCode(),
+          postcode: faker.address.zipCode(),
+          county: faker.address.county(),
+          city: faker.address.city(),
+        },
+      ],
+    },
+    documents: [
+      {
+        documentId: faker.random.words(),
+        documentName: faker.lorem.words(),
+        documentUrl: faker.internet.url(),
+      },
+    ],
+    invoiceReference,
+    invoiceNumber: faker.finance.ethereumAddress(),
+    currency: faker.finance.currencyCode(),
+    invoiceDate,
+    dueDate: faker.date.future().toISOString().substring(0, 10),
+    description,
+    items,
+    customFields: [
+      {
+        key: "invoiceCustomField",
+        value: faker.random.words(),
+      },
+    ],
+    extensions: [
+      {
+        addDeduct: "ADD",
+        value: faker.datatype.number(100),
+        type: "PERCENTAGE",
+        name: faker.random.words(),
+      },
+      {
+        addDeduct: "DEDUCT",
+        type: "FIXED_VALUE",
+        value: faker.datatype.number(100),
+        name: faker.random.words(),
+      },
+    ],
+  };
+
+  return invoice;
+};
+
+function generateRandomInvoiceItem(): InvoiceItem {
+  const itemReference = Math.random().toString();
+  const description = `Item description ${Math.random()}`;
+  const quantity = Math.floor(Math.random() * 10) + 1;
+  const rate = Math.floor(Math.random() * 100) + 1;
+  const itemName = `Item ${Math.random()}`;
+  const itemUOM = `UOM ${Math.random()}`;
+  const customFields = [
+    {
+      key: `Custom Field ${Math.random()}`,
+      value: `Custom Value ${Math.random()}`
+    }
+  ];
+  const extensions = [
+    {
+      addDeduct: Math.random() > 0.5 ? "ADD" : "DEDUCT",
+      value: Math.floor(Math.random() * 10) + 1,
+      type: Math.random() > 0.5 ? "FIXED_VALUE" : "PERCENTAGE",
+      name: `Extension ${Math.random()}`
+    }
+  ];
+  return {
+    itemReference,
+    description,
+    quantity,
+    rate,
+    itemName,
+    itemUOM,
+    customFields,
+    extensions,
+  };
 }
 
 export default function CreateInvoice(): JSX.Element {
@@ -72,25 +156,13 @@ export default function CreateInvoice(): JSX.Element {
       setIsLoading(true);
 
       const invoiceItems: InvoiceItem[] = [];
-      const itemReference = `itemRef-${Math.floor(Math.random() * 1000)}`;
-      const description = `Description-${Math.floor(Math.random() * 1000)}`;
-      const quantity = Math.floor(Math.random() * 10) + 1;
-      const rate = Math.floor(Math.random() * 1000) + 1;
+      const newInvoiceItem = generateRandomInvoiceItem();
 
-      invoiceItems.push({
-        itemReference,
-        description,
-        quantity,
-        rate,
-      });
+      invoiceItems.push(newInvoiceItem);
 
-      const invoice: Invoice = {
-        invoiceReference,
-        invoiceDate,
-        description,
-        amount,
-        items: invoiceItems,
-      };
+      const invoice: Invoice = generateInvoice(invoiceReference, invoiceDate, description, invoiceItems);
+
+      console.log(invoice)
 
       try {
         const response = await axios.post(

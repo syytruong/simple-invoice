@@ -1,21 +1,15 @@
 import { INPUT } from 'constant/style';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CreateInvoice from './CreateInvoice';
 import axios from 'axios';
 import { API_URL } from '../../constant';
-
-interface Invoice {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-}
+import { Invoice, InvoiceItem } from './interfaces'
 interface QueryParams {
   fromDate: string;
   toDate: string;
   pageSize: number;
   pageNum: number;
-  ordering: 'ASCENDING' | 'DESCENDING';
+  ordering: string;
   sortBy: string;
   status?: string;
   keyword?: string;
@@ -41,49 +35,67 @@ export default function InvoicePage(): JSX.Element {
   const [order, setOrder] = useState(ORDER_TYPES.ascending);
   const [sortBy, setSortBy] = useState('CREATED_DATE');
   const [status, setStatus] = useState('PAID');
+
+  // Use debouncedKeyword state to prevent using another 3rd party
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
 
   useEffect(() => {
-    const fetchInvoices = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        let queryParams: QueryParams = {
-          fromDate: start.toISOString().substring(0, 10),
-          toDate: end.toISOString().substring(0, 10),
-          pageSize: limit,
-          pageNum: page,
-          ordering: "ASCENDING",
-          sortBy: sortBy,
-          status: status,
-        };
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(keyword);
+    }, 1500);
 
-        if (keyword?.length) {
-          queryParams = {...queryParams, keyword: keyword};
-        }
-
-        const response = await axios({
-          url: `${API_URL.baseURL}/invoice-service/1.0.0/invoices`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-            'org-token': org_token,
-          },
-          params: queryParams,
-        });
-
-        console.log(response.data);
-        setInvoices(response.data);
-      } catch (error) {
-        throw new Error('Error fetching invoices' + error);
-      } finally {
-        setIsLoading(false);
-      }
+    return () => {
+      clearTimeout(timer);
     };
+  }, [keyword]);
 
+  const fetchInvoices = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      let queryParams: QueryParams = {
+        fromDate: start.toISOString().substring(0, 10),
+        toDate: end.toISOString().substring(0, 10),
+        pageSize: limit,
+        pageNum: page,
+        ordering: order,
+        sortBy: sortBy,
+        status: status,
+      };
+  
+      if (debouncedKeyword?.length) {
+        queryParams = {...queryParams, keyword: debouncedKeyword};
+      }
+  
+      const response = await axios({
+        url: `${API_URL.baseURL}/invoice-service/1.0.0/invoices`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          'org-token': org_token,
+        },
+        params: queryParams,
+      });
+  
+      console.log(response.data);
+      setInvoices(response.data);
+    } catch (error) {
+      throw new Error('Error fetching invoices' + error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [access_token, debouncedKeyword, end, limit, order, org_token, page, sortBy, start, status]);
+  
+  useEffect(() => {
     if (access_token && org_token) {
       fetchInvoices();
     }
-  }, [access_token, end, keyword, limit, order, org_token, page, sortBy, start, status]);
+  }, [access_token, org_token, fetchInvoices]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const inputValue = event.target.value;
+    setKeyword(inputValue);
+  };
 
   const resetFilter = (): void => {
     setStart(new Date("2021-05-27"));
@@ -102,7 +114,12 @@ export default function InvoicePage(): JSX.Element {
             <CreateInvoice />
           </div>
           <div>
-            <input placeholder="Input to search" className={INPUT.DEFAULT} />
+            <input
+              placeholder="Input to search"
+              className={INPUT.DEFAULT}
+              value={keyword}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
@@ -111,35 +128,23 @@ export default function InvoicePage(): JSX.Element {
             <table className="w-full table-auto">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-2 text-xs text-gray-500">ID</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Name</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Email</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Created_at</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Download</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Delete</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Reference</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Description</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Quantity</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Created at</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-300">
                 {invoices.map((invoice) => (
-                  <tr key={invoice.id} className="whitespace-nowrap">
-                    <td className="px-6 py-4 text-sm text-gray-500">{invoice.id}</td>
+                  <tr key={invoice.invoiceReference} className="whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceReference}</td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{invoice.name}</div>
+                      <div className="text-sm text-gray-900">{invoice.description}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500">{invoice.email}</div>
+                      <div className="text-sm text-gray-500">{invoice.items.length}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{invoice.created_at}</td>
-                    <td className="px-6 py-4">
-                      <a href="#" className="px-4 py-1 text-sm text-blue-600 bg-blue-200 rounded-md">
-                        Download
-                      </a>
-                    </td>
-                    <td className="px-6 py-4">
-                      <a href="#" className="px-4 py-1 text-sm text-red-400 bg-red-200 rounded-md">
-                        Delete
-                      </a>
-                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceDate}</td>
                   </tr>
                 ))}
               </tbody>
