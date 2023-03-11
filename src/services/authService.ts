@@ -19,14 +19,10 @@ export const fetchAccessToken = async (
       },
     });
 
-    console.log("Username ", username);
-    console.log("password ", password);
-    console.log("RES: ", response);
-
     const { access_token, refresh_token } = response.data;
     return { access_token, refresh_token };
   } catch (error) {
-    throw new Error('Error fetching access token');
+    throw new Error('Error fetching access token:' + error);
   }
 };
 
