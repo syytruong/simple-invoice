@@ -1,9 +1,8 @@
-import {useState} from 'react'
 import { INPUT } from 'constant/style';
 import { FieldValues, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from 'constant';
+import { ROUTES, API_URL } from 'constant';
 
 export default function Login(): JSX.Element {
   const {
@@ -18,31 +17,54 @@ export default function Login(): JSX.Element {
     const { email, password } = data;
   
     try {
-      const { access_token, refresh_token } = await login(email, password);
+      const { access_token, refresh_token } = await fetchAccessToken(email, password);
+      const { org_token } = await fetchOrgToken(access_token);
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('org_token', org_token);
+      localStorage.setItem('refresh_token', refresh_token);
       navigate(ROUTES.INVOICE);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const login = async (username: string, password: string): Promise<{ access_token: string; refresh_token: string }> => {
-    const response = await axios({
-      url: 'https://sandbox.101digital.io/token',
-      method: 'POST',
-      params: {
-        client_id: 'oO8BMTesSg9Vl3_jAyKpbOd2fIEa',
-        client_secret: '0Exp4dwqmpON_ezyhfm0o_Xkowka',
-        grant_type: 'password',
-        scope: 'openid',
-        username,
-        password,
-      },
-    });
-
-    // Extract the org token from the user data
-    const { access_token, refresh_token } = response.data;
-    return { access_token, refresh_token };
+  const fetchAccessToken = async (username: string, password: string): Promise<{ access_token: string; refresh_token: string }> => {
+    try {
+      const response = await axios({
+        url: `${API_URL.baseURL}/token`,
+        method: 'POST',
+        params: {
+          client_id: 'oO8BMTesSg9Vl3_jAyKpbOd2fIEa',
+          client_secret: '0Exp4dwqmpON_ezyhfm0o_Xkowka',
+          grant_type: 'password',
+          scope: 'openid',
+          username,
+          password,
+        },
+      });
+  
+      const { access_token, refresh_token } = response.data;
+      return { access_token, refresh_token };
+    } catch (error) {
+      throw new Error("Error fetching access token: " + error)
+    }
   };
+
+  const fetchOrgToken = async (access_token: string): Promise<{ org_token: string}> => {
+    try {
+      const response = await axios({
+        url: `${API_URL.baseURL}/membership-service/1.2.0/users/me`,
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + access_token},
+      });
+
+      const { data } = response.data
+    
+      return (data.memberships[0].token);
+    } catch (error) {
+      throw new Error("Error fetching org token: " + error);
+    }
+  }
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">

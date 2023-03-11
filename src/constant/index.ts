@@ -4,4 +4,6 @@ export const ROUTES = {
     INVOICE: '/invoice',
 };  
 
-export const API_URL = {};
+export const API_URL = {
+    baseURL: 'https://sandbox.101digital.io',
+};
