@@ -1,15 +1,98 @@
 import { INPUT } from 'constant/style';
+import { useState, useEffect } from 'react';
+import CreateInvoice from './CreateInvoice';
+import axios from 'axios';
+import { API_URL } from '../../constant';
+
+interface Invoice {
+  id: string;
+}
+interface QueryParams {
+  fromDate: string;
+  toDate: string;
+  pageSize: number;
+  pageNum: number;
+  ordering: 'ASCENDING' | 'DESCENDING';
+  sortBy: string;
+  status?: string;
+  keyword?: string;
+}
 
 export default function InvoicePage(): JSX.Element {
+  const ORDER_TYPES = {
+    ascending: 'ASCENDING',
+    desending: 'DESCENDING',
+  }
+
+  const access_token = localStorage.getItem('access_token');
+  const org_token = localStorage.getItem('org_token');
+
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ** Params for API call
+  const [start, setStart] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return d;
+  });
+  const [end, setEnd] = useState(new Date());
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [order, setOrder] = useState(ORDER_TYPES.ascending);
+  const [sortBy, setSortBy] = useState('CREATED_DATE');
+  const [status, setStatus] = useState('PAID');
+  const [keyword, setKeyword] = useState('');
+
+  useEffect(() => {
+    const fetchInvoices = async (): Promise<void> => {
+      try {
+        setIsLoading(true);
+        let queryParams: QueryParams = {
+          fromDate: start.toISOString().substring(0, 10),
+          toDate: end.toISOString().substring(0, 10),
+          pageSize: limit,
+          pageNum: page,
+          ordering: "ASCENDING",
+          sortBy: sortBy,
+          status: status,
+        };
+
+        if (keyword?.length) {
+          queryParams = {...queryParams, keyword: keyword};
+        }
+
+        const response = await axios({
+          url: `${API_URL.baseURL}/invoice-service/1.0.0/invoices`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            'org-token': org_token,
+          },
+          params: queryParams,
+        });
+
+        console.log(response.data);
+        setInvoices(response.data);
+      } catch (error) {
+        throw new Error('Error fetching invoices' + error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (access_token && org_token) {
+      fetchInvoices();
+    }
+  }, [access_token, end, keyword, limit, order, org_token, page, sortBy, start, status]);
+
   return (
     <div className="container flex justify-center mx-auto py-10">
       <div className="flex flex-col">
         <div className="w-full">
           <div className="mb-5 grid md:grid-cols-2 sm:grid-cols-1 gap-4">
             <div>
-              <button className="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-md text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 capitalize">
-                create invoice
-              </button>
+              <CreateInvoice />
             </div>
 
             <div>
