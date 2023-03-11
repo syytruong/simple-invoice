@@ -8,39 +8,31 @@ export interface Invoice {
   customer: {
     firstName: string;
     lastName: string;
-    contact: {
-      email: string;
-      mobileNumber: string;
-    };
-    addresses: {
-      premise: string;
-      countryCode: string;
-      postcode: string;
-      county: string;
-      city: string;
-    }[];
+    addresses: unknown[];
   };
-  documents: {
-    documentId: string;
-    documentName: string;
-    documentUrl: string;
-  }[];
   invoiceReference: string;
   invoiceNumber: string;
   currency: string;
   invoiceDate: string;
+  invoiceId: string;
   dueDate: string;
   description: string;
   customFields: {
     key: string;
     value: string;
   }[];
-  extensions: {
-    addDeduct: "ADD" | "DEDUCT";
-    value: number;
-    type: "FIXED_VALUE" | "PERCENTAGE";
-    name: string;
+  extensions: unknown[];
+  totalSubAmount: number;
+  totalDiscount: number;
+  totalTax: number;
+  totalAmount: number;
+  balanceAmount: number;
+  status: {
+    key: string;
+    value: boolean;
   }[];
+  type: string;
+  version: string;
   items: InvoiceItem[];
 }
 export interface InvoiceItem {

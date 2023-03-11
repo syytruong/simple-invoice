@@ -31,9 +31,10 @@ export default function InvoicePage(): JSX.Element {
   // ** Params for API call
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10); // TODO: do paginate
+  const [page, setPage] = useState(1); // TODO: do paginate
   const [order, setOrder] = useState(ORDER_TYPES.ascending);
+  const [dateType, setDateType] = useState('INVOICE_DATE')
   const [sortBy, setSortBy] = useState('');
   const [status, setStatus] = useState('');
 
@@ -58,7 +59,7 @@ export default function InvoicePage(): JSX.Element {
         pageSize: limit,
         pageNum: page,
         ordering: order,
-        dateType: 'INVOICE_DATE',
+        dateType: dateType,
         sortBy: sortBy,
         status: status,
       };
@@ -85,14 +86,13 @@ export default function InvoicePage(): JSX.Element {
         params: queryParams,
       });
   
-      console.log(response.data);
-      setInvoices(response.data);
+      setInvoices(response.data.data);
     } catch (error) {
       throw new Error('Error fetching invoices' + error);
     } finally {
       setIsLoading(false);
     }
-  }, [access_token, debouncedKeyword, end, limit, order, org_token, page, sortBy, start, status]);
+  }, [access_token, dateType, debouncedKeyword, end, limit, order, org_token, page, sortBy, start, status]);
   
   useEffect(() => {
     if (access_token && org_token) {
@@ -141,25 +141,25 @@ export default function InvoicePage(): JSX.Element {
           </div>
         ) : (
           <div className="border-b border-gray-200 shadow">
-            {invoices.length > 0 ? (
+            {invoices?.length ? (
               <table className="w-full table-auto">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-2 text-xs text-gray-500">Reference</th>
                     <th className="px-6 py-2 text-xs text-gray-500">Description</th>
-                    <th className="px-6 py-2 text-xs text-gray-500">Quantity</th>
+                    <th className="px-6 py-2 text-xs text-gray-500">Amount</th>
                     <th className="px-6 py-2 text-xs text-gray-500">Created at</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-300">
                   {invoices.map((invoice) => (
-                    <tr key={invoice.invoiceReference} className="whitespace-nowrap">
-                      <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceReference}</td>
+                    <tr key={invoice.invoiceId} className="whitespace-nowrap">
+                      <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceId}</td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">{invoice.description}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-500">{invoice.items.length}</div>
+                        <div className="text-sm text-gray-500">{invoice.balanceAmount}</div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceDate}</td>
                     </tr>

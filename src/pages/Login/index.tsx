@@ -50,7 +50,6 @@ export default function Login(): JSX.Element {
         },
       });
   
-      console.log("WHAT IS THIS??", response.data);
       const { access_token, refresh_token } = response.data;
       return { access_token, refresh_token };
     } catch (error) {

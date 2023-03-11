@@ -10,7 +10,7 @@ interface FormErrors {
   amount?: string;
 }
 
-const generateInvoice = (invoiceReference: string, invoiceDate: string, description: string,  items: InvoiceItem[]): Invoice => {
+const generateInvoice = (invoiceReference: string, dueDate: string, description: string, amount: number, items: InvoiceItem[]): Invoice => {
   const invoice: Invoice = {
     bankAccount: {
       bankId: "123456",
@@ -21,10 +21,6 @@ const generateInvoice = (invoiceReference: string, invoiceDate: string, descript
     customer: {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
-      contact: {
-        email: faker.internet.email(),
-        mobileNumber: faker.phone.phoneNumber(),
-      },
       addresses: [
         {
           premise: faker.address.secondaryAddress(),
@@ -35,18 +31,11 @@ const generateInvoice = (invoiceReference: string, invoiceDate: string, descript
         },
       ],
     },
-    documents: [
-      {
-        documentId: faker.random.words(),
-        documentName: faker.lorem.words(),
-        documentUrl: faker.internet.url(),
-      },
-    ],
     invoiceReference,
     invoiceNumber: faker.finance.ethereumAddress(),
     currency: faker.finance.currencyCode(),
-    invoiceDate,
-    dueDate: faker.date.future().toISOString().substring(0, 10),
+    invoiceDate: faker.date.future().toISOString().substring(0, 10),
+    dueDate,
     description,
     items,
     customFields: [
@@ -69,6 +58,15 @@ const generateInvoice = (invoiceReference: string, invoiceDate: string, descript
         name: faker.random.words(),
       },
     ],
+    totalAmount: amount,
+    balanceAmount: amount,
+    totalTax: faker.datatype.number({ min: 0, max: 100 }),
+    totalDiscount: faker.datatype.number({ min: 0, max: 100 }),
+    totalSubAmount: (amount || 0) - (faker.datatype.number({ min: 0, max: 100 }) || 0) + (faker.datatype.number({ min: 0, max: 100 }) || 0),
+    invoiceId: faker.datatype.uuid(),
+    status: [],
+    type: faker.random.word(),
+    version: faker.datatype.number({ min: 1, max: 10 }).toString(),
   };
 
   return invoice;
@@ -160,12 +158,11 @@ export default function CreateInvoice(): JSX.Element {
 
       invoiceItems.push(newInvoiceItem);
 
-      const invoice: Invoice = generateInvoice(invoiceReference, invoiceDate, description, invoiceItems);
 
-      console.log(invoice)
+      const invoice: Invoice = generateInvoice(invoiceReference, invoiceDate, description, amount, invoiceItems);
 
       try {
-        const response = await axios.post(
+        await axios.post(
           `${API_URL.baseURL}/invoice-service/2.0.0/invoices`,
           { invoices: [invoice] },
           {
@@ -177,8 +174,6 @@ export default function CreateInvoice(): JSX.Element {
             },
           }
         );
-
-        console.log(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -239,7 +234,7 @@ export default function CreateInvoice(): JSX.Element {
                   {errors.invoiceReference && <div className="text-red-500">{errors.invoiceReference}</div>}
                 </div>
                 <div className="mb-1 p-4">
-                  <label htmlFor="invoiceDate" className="block text-gray-700 font-bold mb-2">Invoice Date:</label>
+                  <label htmlFor="invoiceDate" className="block text-gray-700 font-bold mb-2">Due Date:</label>
                   <input
                     type="date"
                     id="invoiceDate"
