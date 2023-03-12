@@ -52,8 +52,11 @@ Install code editor: visual studio code
 ### Step 2: Run app locally
 
 Getting started and running the app locally
-
+```
 nvm use 14.18.1 # current node version that is working with our serve
 npm install # run this if you have not installed
 npm run start # compiles and hot-reloads for development
 npm run test # run test
+```
+
+Enjoy!
