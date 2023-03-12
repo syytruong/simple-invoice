@@ -96,21 +96,22 @@ export default function InvoicePage(): JSX.Element {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="max-w-5xl w-full px-4">
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+            <div className="w-full sm:w-auto">
               <CreateInvoice />
             </div>
-            <div>
+            <div className="w-full sm:w-auto">
               <input
-                className={INPUT.DEFAULT}
+                className="w-full px-4 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:max-w-xs md:max-w-md lg:max-w-lg sm:w-72 md:w-80 lg:w-96"
                 placeholder="Input to search"
                 value={keyword}
                 onChange={handleInputChange}
               />
             </div>
+
           </div>
 
           {isLoading ? (
