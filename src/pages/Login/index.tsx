@@ -3,7 +3,7 @@ import { INPUT } from 'constants/style';
 import { FieldValues, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants';
-import { fetchAccessToken, fetchOrgToken } from '../../services/apiServices'
+import { fetchAccessToken, fetchOrgToken } from '../../services/apiServices';
 
 export default function Login(): JSX.Element {
   const {
@@ -18,12 +18,12 @@ export default function Login(): JSX.Element {
 
   const onSubmit = async (data: FieldValues): Promise<void> => {
     const { email, password } = data;
-  
+
     try {
       setIsLoading(true);
       const { access_token, refresh_token } = await fetchAccessToken(email, password);
       const org_token = await fetchOrgToken(access_token);
-  
+
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('org_token', org_token);
@@ -101,7 +101,11 @@ export default function Login(): JSX.Element {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 ${isLoading ? 'bg-primary-300 hover:bg-primary-300 dark:bg-primary-300 dark:hover:bg-primary-300 dark:focus:ring-primary-400 cursor-not-allowed' : ''}`}
+                className={`w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 ${
+                  isLoading
+                    ? 'bg-primary-300 hover:bg-primary-300 dark:bg-primary-300 dark:hover:bg-primary-300 dark:focus:ring-primary-400 cursor-not-allowed'
+                    : ''
+                }`}
               >
                 {isLoading ? 'Loading.....' : 'Login'}
               </button>

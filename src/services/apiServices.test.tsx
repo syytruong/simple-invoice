@@ -12,7 +12,7 @@ describe('fetchAccessToken', () => {
   });
 
   it('fetches access token successfully', async () => {
-    const testUsername = "dung+octopus4@101digital.io";
+    const testUsername = 'dung+octopus4@101digital.io';
     const testPassword = 'Abc@123456';
     const testAccessToken = 'testaccesstoken';
     const testRefreshToken = 'testrefreshtoken';
@@ -34,7 +34,7 @@ describe('fetchAccessToken', () => {
     const testError = new Error('Error to fetch access token');
 
     const axiosPostSpy = jest.spyOn(axios, 'post').mockRejectedValueOnce(testError);
-    const data = { data: {access_token: '', refresh_token: ''} };
+    const data = { data: { access_token: '', refresh_token: '' } };
     mock.onPost(`${API.url}/token`).reply(500, data);
 
     await expect(fetchAccessToken(testUsername, testPassword)).rejects.toThrow('Error fetching access token');
@@ -54,17 +54,16 @@ describe('fetchOrgToken', () => {
   it('returns the organization token if the API call succeeds', async () => {
     mock.onGet(`${API.url}/membership-service/1.2.0/users/me`).reply(200, {
       data: {
-        memberships: [{ token: testOrgToken }]
-      }
+        memberships: [{ token: testOrgToken }],
+      },
     });
 
     try {
       const response = await fetchOrgToken(testAccessToken);
-      expect(response).toEqual(testOrgToken); 
+      expect(response).toEqual(testOrgToken);
     } catch (error) {
       console.log('Error:', error);
     }
-   
   });
 
   it('throws an error if the API call fails', async () => {
@@ -117,9 +116,9 @@ describe('fetchInvoices', () => {
       })
       .reply(200, { data: invoices });
 
-    fetchInvoices(access_token, org_token, queryParams).then(response => {
+    fetchInvoices(access_token, org_token, queryParams).then((response) => {
       expect(response).toEqual(invoices);
-    })
+    });
   });
 
   it('throws an error if credentials are not provided', async () => {

@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from 'utils/axios';
 import { API } from '../constants';
 import { Invoice, FetchInvoicesQueryParams } from '../pages/Invoice/interfaces';
 
 export const fetchAccessToken = async (
   username: string,
-  password: string
+  password: string,
 ): Promise<{ access_token: string; refresh_token: string }> => {
   try {
     const response = await axios({
@@ -19,6 +19,8 @@ export const fetchAccessToken = async (
         password,
       },
     });
+
+    console.log("????", response.data)
 
     const { access_token, refresh_token } = response.data;
     return { access_token, refresh_token };
@@ -40,7 +42,7 @@ export const fetchOrgToken = async (access_token: string): Promise<string> => {
   } catch (error) {
     throw new Error('Error fetching org token: ' + error);
   }
-}
+};
 
 export const fetchInvoices = async (
   access_token: string | null,

@@ -19,7 +19,7 @@ export interface Invoice {
   description: string;
   customFields: {
     key: string;
-    value: string;
+    value: number;
   }[];
   extensions: unknown[];
   totalSubAmount: number;
@@ -44,7 +44,7 @@ export interface InvoiceItem {
   itemUOM: string;
   customFields: {
     key: string;
-    value: string;
+    value: number;
   }[];
   extensions: {
     addDeduct: string;

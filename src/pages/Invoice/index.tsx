@@ -1,15 +1,14 @@
+import { INPUT } from 'constants/style';
 import { useState, useEffect, useCallback } from 'react';
 import CreateInvoice from './CreateInvoice';
 import { Invoice, FetchInvoicesQueryParams } from './interfaces';
 import { fetchInvoices } from '../../services/apiServices';
-import InvoiceList from './InvoiceList';
-import { INPUT } from '../../constants/style'
 
 export default function InvoicePage(): JSX.Element {
   const ORDER_TYPES = {
     ascending: 'ASCENDING',
     desending: 'DESCENDING',
-  }
+  };
 
   const access_token = localStorage.getItem('access_token');
   const org_token = localStorage.getItem('org_token');
@@ -23,7 +22,7 @@ export default function InvoicePage(): JSX.Element {
   const [limit, setLimit] = useState(10); // TODO: do paginate
   const [page, setPage] = useState(1); // TODO: do paginate
   const [order, setOrder] = useState(ORDER_TYPES.ascending);
-  const [dateType, setDateType] = useState('INVOICE_DATE')
+  const [dateType, setDateType] = useState('INVOICE_DATE');
   const [sortBy, setSortBy] = useState('');
   const [status, setStatus] = useState('');
 
@@ -52,19 +51,19 @@ export default function InvoicePage(): JSX.Element {
         sortBy: sortBy,
         status: status,
       };
-  
+
       if (debouncedKeyword?.length) {
-        queryParams = {...queryParams, keyword: debouncedKeyword};
+        queryParams = { ...queryParams, keyword: debouncedKeyword };
       }
 
       if (start) {
-        queryParams = {...queryParams, fromDate: start};
+        queryParams = { ...queryParams, fromDate: start };
       }
 
       if (end) {
-        queryParams = {...queryParams, toDate: end};
+        queryParams = { ...queryParams, toDate: end };
       }
-  
+
       const invoices = await fetchInvoices(access_token, org_token, queryParams);
 
       setInvoices(invoices);
@@ -74,7 +73,7 @@ export default function InvoicePage(): JSX.Element {
       setIsLoading(false);
     }
   }, [access_token, dateType, debouncedKeyword, end, limit, order, org_token, page, sortBy, start, status]);
-  
+
   useEffect(() => {
     if (access_token && org_token) {
       getInvoices();
@@ -96,7 +95,7 @@ export default function InvoicePage(): JSX.Element {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center mt-8">
       <div className="max-w-5xl w-full px-4">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
@@ -123,7 +122,44 @@ export default function InvoicePage(): JSX.Element {
               <span className="text-gray-600 font-medium">Loading...</span>
             </div>
           ) : (
-            <InvoiceList invoices={invoices} resetFilter={resetFilter}/>
+            <div className="border-b border-gray-200 shadow">
+              {invoices?.length ? (
+                <table className="w-full table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-2 text-xs text-gray-500">Reference</th>
+                      <th className="px-6 py-2 text-xs text-gray-500">Description</th>
+                      <th className="px-6 py-2 text-xs text-gray-500">Amount</th>
+                      <th className="px-6 py-2 text-xs text-gray-500">Created at</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-300">
+                    {invoices.map((invoice) => (
+                      <tr key={invoice.invoiceId} className="whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceId}</td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900">{invoice.description}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-500">{invoice.balanceAmount}</div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceDate}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-lg text-gray-500">No invoices found!</p>
+                  <button
+                    className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    onClick={(): void => resetFilter()}
+                  >
+                    Reset Filter
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

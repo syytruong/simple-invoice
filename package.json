@@ -29,7 +29,8 @@
     "prettier": "prettier --write .",
     "prepare": "husky install",
     "lint": "eslint . --ext .tsx,.ts",
-    "serve": "serve -s build -l 4000"
+    "serve": "serve -s build -l 4000",
+    "dev": "concurrently --kill-others \"yarn start\" \"node ./mocks/index.js\""
   },
   "eslintConfig": {
     "extends": [
@@ -58,9 +59,14 @@
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "axios-mock-adapter": "^1.21.2",
+    "concurrently": "^7.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
     "prettier": "^2.8.4",
