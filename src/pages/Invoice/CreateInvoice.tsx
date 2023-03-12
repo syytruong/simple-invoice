@@ -194,12 +194,12 @@ export default function CreateInvoice(): JSX.Element {
                   </label>
                   <input
                     type="text"
-                    className={`w-full ${errors.email ? INPUT.ERROR : INPUT.DEFAULT}`}
+                    className={`w-full ${errors.invoiceReference ? INPUT.ERROR : INPUT.DEFAULT}`}
                     {...register('invoiceReference', { required: true })}
                   />
                   {errors.invoiceReference && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                      <span>Invoice Reference is required.</span>
+                      <span>Invoice Reference field is required.</span>
                     </p>
                   )}
                 </div>
@@ -209,12 +209,12 @@ export default function CreateInvoice(): JSX.Element {
                   </label>
                   <input
                     type="date"
-                    className={`w-full ${errors.email ? INPUT.ERROR : INPUT.DEFAULT}`}
+                    className={`w-full ${errors.invoiceDate ? INPUT.ERROR : INPUT.DEFAULT}`}
                     {...register('invoiceDate', { required: true })}
                   />
                   {errors.invoiceDate && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                      <span>Invoice Date is required.</span>
+                      <span>Due Date field is required.</span>
                     </p>
                   )}
                 </div>
@@ -225,12 +225,12 @@ export default function CreateInvoice(): JSX.Element {
                   <textarea
                     rows={3}
                     style={{ resize: 'none' }}
-                    className={`w-full ${errors.email ? INPUT.ERROR : INPUT.DEFAULT}`}
+                    className={`w-full ${errors.description ? INPUT.ERROR : INPUT.DEFAULT}`}
                     {...register('description', { required: true })}
                   />
                   {errors.description && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                      <span>Description is required.</span>
+                      <span>Description field is required.</span>
                     </p>
                   )}
                 </div>
@@ -240,12 +240,12 @@ export default function CreateInvoice(): JSX.Element {
                   </label>
                   <input
                     type="number"
-                    className={`w-full ${errors.email ? INPUT.ERROR : INPUT.DEFAULT}`}
+                    className={`w-full ${errors.amount ? INPUT.ERROR : INPUT.DEFAULT}`}
                     {...register('amount', { required: true })}
                   />
                   {errors.amount && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                      <span>Description is required.</span>
+                      <span>Amount field is required.</span>
                     </p>
                   )}
                 </div>
