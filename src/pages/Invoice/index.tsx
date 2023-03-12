@@ -1,8 +1,9 @@
-import { INPUT } from 'constants/style';
 import { useState, useEffect, useCallback } from 'react';
 import CreateInvoice from './CreateInvoice';
 import { Invoice, FetchInvoicesQueryParams } from './interfaces';
 import { fetchInvoices } from '../../services/apiServices';
+import InvoiceList from './InvoiceList';
+import { INPUT } from '../../constants/style'
 
 export default function InvoicePage(): JSX.Element {
   const ORDER_TYPES = {
@@ -95,70 +96,35 @@ export default function InvoicePage(): JSX.Element {
   };
 
   return (
-    <div className="container mx-auto py-10 min-h-screen max-w-screen-md">
-      <div className="flex flex-col md:w-3/4 lg:w-1/2 xl:w-2/3 mx-auto">
-        <div className="mb-5 grid md:grid-cols-2 gap-4 flex-wrap">
-          <div className="mt-0 sm:mt-0 w-full">
-            <CreateInvoice />
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="max-w-5xl w-full px-4">
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CreateInvoice />
+            </div>
+            <div>
+              <input
+                className={INPUT.DEFAULT}
+                placeholder="Input to search"
+                value={keyword}
+                onChange={handleInputChange}
+              />
+            </div>
           </div>
-          <div>
-            <input
-              placeholder="Input to search"
-              className={INPUT.DEFAULT}
-              value={keyword}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm12 0a8 8 0 018 8v-2a6 6 0 00-6-6h-2zm-8 0a4 4 0 014-4V4a8 8 0 00-8 8h4zm12 0a4 4 0 01-4 4v2a6 6 0 006-6h2z"></path>
-            </svg>
-            <span className="text-lg text-gray-500">Loading...</span>
-          </div>
-        ) : (
-          <div className="border-b border-gray-200 shadow">
-            {invoices?.length ? (
-              <table className="w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-2 text-xs text-gray-500">Reference</th>
-                    <th className="px-6 py-2 text-xs text-gray-500">Description</th>
-                    <th className="px-6 py-2 text-xs text-gray-500">Amount</th>
-                    <th className="px-6 py-2 text-xs text-gray-500">Created at</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-300">
-                  {invoices.map((invoice) => (
-                    <tr key={invoice.invoiceId} className="whitespace-nowrap">
-                      <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceId}</td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{invoice.description}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-500">{invoice.balanceAmount}</div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{invoice.invoiceDate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-lg text-gray-500">No invoices found!</p>
-                <button
-                  className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  onClick={(): void => resetFilter()}
-                >
-                  Reset Filter
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+          {isLoading ? (
+            <div className="flex items-center justify-center h-48">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-6 w-6 mr-2">
+                <circle cx="12" cy="12" r="10" strokeWidth="4" className="opacity-25" stroke="currentColor"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm12 0a8 8 0 018 8v-2a6 6 0 00-6-6h-2zm-8 0a4 4 0 014-4V4a8 8 0 00-8 8h4zm12 0a4 4 0 01-4 4v2a6 6 0 006-6h2z"></path>
+              </svg>
+              <span className="text-gray-600 font-medium">Loading...</span>
+            </div>
+          ) : (
+            <InvoiceList invoices={invoices} resetFilter={resetFilter}/>
+          )}
+        </div>
       </div>
     </div>
   );
