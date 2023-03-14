@@ -21,7 +21,8 @@ simple-invoice/
 │   │   │   ├── index.tsx
 │   │   └── index.tsx
 │   ├── services/
-│   │   ├── authService.js
+│   │   ├── authService.ts
+│   │   ├── authService.test.tsx
 │   ├── styles/
 │   │   ├── index.css
 │   ├── utils/
