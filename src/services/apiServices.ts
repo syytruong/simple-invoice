@@ -1,4 +1,4 @@
-import axios from 'utils/axios';
+import axios from '../utils/axios';
 import { API } from '../constants';
 import { Invoice, FetchInvoicesQueryParams } from '../pages/Invoice/interfaces';
 
@@ -19,8 +19,6 @@ export const fetchAccessToken = async (
         password,
       },
     });
-
-    console.log("????", response.data)
 
     const { access_token, refresh_token } = response.data;
     return { access_token, refresh_token };

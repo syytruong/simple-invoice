@@ -54,9 +54,9 @@ Install code editor: visual studio code
 Getting started and running the app locally
 ```
 nvm use 14.18.1 # current node version that is working with our serve
-npm install # run this if you have not installed
-npm run dev # compiles and hot-reloads for development
-npm run test # run test
+yarn install # run this if you have not installed
+yarn dev # compiles and hot-reloads for development
+yarn test # run test
 ```
 
 Enjoy!
